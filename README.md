@@ -93,23 +93,31 @@ An initial exhaustive grid search was conducted across **80 candidate configurat
 - **Best 5-Fold CV RMSE**: **4.4037 MW**.
 
 ### 2. Optuna Bayesian Optimization (Primary Method)
-To search continuous parameter spaces and discover more optimal architectures efficiently, **Optuna (Tree-structured Parzen Estimator / TPE)** was deployed with 5-fold cross-validation over 30 adaptive trials:
+To search continuous parameter spaces and discover more optimal architectures efficiently, **Optuna (Tree-structured Parzen Estimator / TPE)** was deployed with 5-fold cross-validation over 30 adaptive trials.
+
+Deterministic reproducibility across notebook executions is guaranteed through:
+- `sampler = optuna.samplers.TPESampler(seed=42)`
+- Explicit per-trial seeding (`torch.manual_seed(42 + trial.number)`, `np.random.seed(42 + trial.number)`) inside the objective function to isolate PyTorch and NumPy weight initializations across trials.
+
+**Search Space**:
 - `hidden_size`: Integer range [4, 32]
 - `activation`: Categorical `['ReLU', 'Tanh']`
 - `optimizer`: Categorical `['Adam', 'RMSprop']`
 - `lr`: Log-uniform float range [1e-4, 1e-2]
 - `batch_size`: Step range [32, 128] (step 16)
-- **Best 5-Fold CV RMSE**: **4.2106 MW** (outperforming GridSearchCV by 0.1931 MW).
+
+**Optuna Outcome**:
+- **Best 5-Fold CV RMSE**: **4.2645 MW** (Trial 28), improving upon GridSearchCV by $0.1392	ext{ MW}$.
 
 ### Final Optuna Hyperparameters
 The optimal configuration identified by Optuna and deployed to the final model:
 
 | Hyperparameter | Optimal Value |
 | :--- | :--- |
-| **Hidden Layer Size** | **29 neurons** (2 hidden layers) |
+| **Hidden Layer Size** | **27 neurons** (2 hidden layers) |
 | **Activation Function** | **Tanh** (`nn.Tanh`) |
-| **Optimizer** | **RMSprop** (`optim.RMSprop`) |
-| **Learning Rate** | **0.007467** |
+| **Optimizer** | **Adam** (`optim.Adam`) |
+| **Learning Rate** | **0.002291** |
 | **Batch Size** | **32** |
 | **Training Epochs** | **100** |
 
@@ -121,13 +129,13 @@ The unified `ann_pipeline` was reconfigured with all optimal Optuna parameters, 
 
 | Metric | Baseline ANN | **Final Optimized ANN** | Absolute Improvement |
 | :--- | :---: | :---: | :---: |
-| **MAE** | 3.5587 MW | **3.0780 MW** | **-0.4807 MW** |
-| **MSE** | 20.4061 | **16.3761** | **-4.0300** |
-| **RMSE** | 4.5173 MW | **4.0467 MW** | **-0.4706 MW** |
-| **R² Score** | 0.9324 | **0.9457** | **+0.0133** |
+| **MAE** | 3.5587 MW | **3.1980 MW** | **-0.3607 MW** |
+| **MSE** | 20.4061 | **16.8148** | **-3.5913** |
+| **RMSE** | 4.5173 MW | **4.1006 MW** | **-0.4167 MW** |
+| **R² Score** | 0.9324 | **0.9443** | **+0.0119** |
 
 ### Actual vs. Predicted Output
-Predictions show tight alignment along the identity line ($y = x$) across the entire operating spectrum (420 MW – 495 MW), confirming an $R^2$ of **0.9457**.
+Predictions show tight alignment along the identity line ($y = x$) across the entire operating spectrum (420 MW – 495 MW), confirming an $R^2$ of **0.9443**.
 
 ![Actual vs Predicted](images/actual_vs_predicted.png)
 
