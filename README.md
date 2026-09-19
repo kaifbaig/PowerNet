@@ -107,17 +107,17 @@ Deterministic reproducibility across notebook executions is guaranteed through:
 - `batch_size`: Step range [32, 128] (step 16)
 
 **Optuna Outcome**:
-- **Best 5-Fold CV RMSE**: **4.2645 MW** (Trial 28), improving upon GridSearchCV by $0.1392	ext{ MW}$.
+- **Best 5-Fold CV RMSE**: **4.3156 MW**, obtaining a lower cross-validation error than GridSearchCV ($4.4037\text{ MW}$, a reduction of $0.0881\text{ MW}$) within the evaluated search spaces.
 
 ### Final Optuna Hyperparameters
 The optimal configuration identified by Optuna and deployed to the final model:
 
 | Hyperparameter | Optimal Value |
 | :--- | :--- |
-| **Hidden Layer Size** | **27 neurons** (2 hidden layers) |
-| **Activation Function** | **Tanh** (`nn.Tanh`) |
+| **Hidden Layer Size** | **31 neurons** (2 hidden layers) |
+| **Activation Function** | **ReLU** (`nn.ReLU`) |
 | **Optimizer** | **Adam** (`optim.Adam`) |
-| **Learning Rate** | **0.002291** |
+| **Learning Rate** | **0.000727** (`0.0007271327116704853`) |
 | **Batch Size** | **32** |
 | **Training Epochs** | **100** |
 
@@ -129,13 +129,13 @@ The unified `ann_pipeline` was reconfigured with all optimal Optuna parameters, 
 
 | Metric | Baseline ANN | **Final Optimized ANN** | Absolute Improvement |
 | :--- | :---: | :---: | :---: |
-| **MAE** | 3.5587 MW | **3.1980 MW** | **-0.3607 MW** |
-| **MSE** | 20.4061 | **16.8148** | **-3.5913** |
-| **RMSE** | 4.5173 MW | **4.1006 MW** | **-0.4167 MW** |
-| **R² Score** | 0.9324 | **0.9443** | **+0.0119** |
+| **MAE** | 3.5587 MW | **3.2922 MW** | **-0.2665 MW** |
+| **MSE** | 20.4061 | **17.5204** | **-2.8857** |
+| **RMSE** | 4.5173 MW | **4.1857 MW** | **-0.3316 MW** |
+| **R² Score** | 0.9324 | **0.9419** | **+0.0095** |
 
 ### Actual vs. Predicted Output
-Predictions show tight alignment along the identity line ($y = x$) across the entire operating spectrum (420 MW – 495 MW), confirming an $R^2$ of **0.9443**.
+Predictions show tight alignment along the identity line ($y = x$) across the entire operating spectrum (420 MW – 495 MW), confirming an $R^2$ of **0.9419**.
 
 ![Actual vs Predicted](images/actual_vs_predicted.png)
 
